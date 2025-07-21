@@ -29,7 +29,7 @@ export default function RootLayout({
   const router = useRouter();
   const currentPath = usePathname();
   useEffect(() => {
-    if (currentPath === "/") router.push("/signup");
+    if (currentPath === "/") router.push("/generateOtp");
   }, [currentPath]);
 
   return (
