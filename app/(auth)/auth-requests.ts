@@ -1,8 +1,16 @@
 import { api } from "@/app/apiUrls";
-import { REGISTER_USER, GENERATE_OTP, VERIFY_OTP,COMPLETE_SIGNUP } from "@/app/apiUrls";
+import {
+  REGISTER_USER,
+  GENERATE_OTP,
+  VERIFY_OTP,
+  COMPLETE_SIGNUP,
+  LOGIN_USER,
+} from "@/app/apiUrls";
 import {
   POST_REGISTER_USER,
   POST_VERIFY_USER,
+  POST_LOGIN_RESPONSE,
+  POST_LOGIN_REQUEST,
 } from "@/app/(auth)/auth-requests-types";
 
 export const postRegisterUser = async (payload: POST_REGISTER_USER) => {
@@ -41,4 +49,11 @@ export const postCompleteSignup = async (payload: any) => {
   }
 };
 
-
+export const postManualLogin = async (
+  payload: POST_LOGIN_REQUEST
+): Promise<string | undefined> => {
+  try {
+    const response: POST_LOGIN_RESPONSE = await api.post(LOGIN_USER, payload);
+    return response;
+  } catch (err) {}
+};

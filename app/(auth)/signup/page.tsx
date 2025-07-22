@@ -11,8 +11,12 @@ import Button from "@mui/material/Button";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { postRegisterUser } from "@/app/(auth)/auth-requests";
-import { POST_REGISTER_USER } from "@/app/(auth)/auth-requests-types";
+import { postRegisterUser, postManualLogin } from "@/app/(auth)/auth-requests";
+import {
+  POST_REGISTER_USER,
+  POST_LOGIN_REQUEST,
+  POST_LOGIN_RESPONSE,
+} from "@/app/(auth)/auth-requests-types";
 
 export default function SignUp() {
   const router = useRouter();
@@ -43,11 +47,22 @@ export default function SignUp() {
   const handleSignUp = async (payload: POST_REGISTER_USER) => {
     try {
       const response = await postRegisterUser(payload);
-      saveUserData( payload.email, payload.password );
+      saveUserData(payload.email, payload.password);
 
       toast.success("User Created Successfully");
       router.push("/generateOtp");
     } catch (error) {
+      toast.error("Something Wrong");
+    }
+  };
+
+  const handleManualLogin = async (payload: POST_LOGIN_REQUEST) => {
+    try {
+      const response: string = await postManualLogin(payload);
+      document.cookie = `token=${response}`;
+      toast.success("User Logged In Successfully");
+      router.push("/home");
+    } catch (err) {
       toast.error("Something Wrong");
     }
   };
@@ -240,7 +255,9 @@ export default function SignUp() {
           <Button
             variant="contained"
             onClick={() =>
-              loginModal ? "" : handleSignUp({ email, password })
+              loginModal
+                ? handleManualLogin({ email, password })
+                : handleSignUp({ email, password })
             }
             sx={{
               backgroundColor: "#54708C",
