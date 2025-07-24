@@ -1,6 +1,6 @@
 "use client";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OutlinedInput, FormControl, InputLabel } from "@mui/material";
 import userStore from "@/src/stores/userStore";
 import Visibility from "@mui/icons-material/Visibility";
@@ -11,7 +11,11 @@ import Button from "@mui/material/Button";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { postRegisterUser, postManualLogin } from "@/app/(auth)/auth-requests";
+import {
+  postRegisterUser,
+  postManualLogin,
+  postGoogleLogin,
+} from "@/app/(auth)/auth-requests";
 import {
   POST_REGISTER_USER,
   POST_LOGIN_REQUEST,
@@ -63,6 +67,56 @@ export default function SignUp() {
       toast.success("User Logged In Successfully");
       router.push("/home");
     } catch (err) {
+      toast.error("Something Wrong");
+    }
+  };
+
+  const [codeClient, setCodeClient] = useState(null);
+
+  useEffect(() => {
+    const loadGoogleScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.onload = initializeGoogle;
+      document.body.appendChild(script);
+    };
+
+    const initializeGoogle = () => {
+      if (window.google) {
+        const client = window.google.accounts.oauth2.initCodeClient({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          scope: "openid profile email",
+          redirect_uri: "postmessage",
+          
+          callback: async (response: any) => {
+            try {
+              console.log(response?.code)
+              const res = await postGoogleLogin(
+                response.code,
+              );
+              document.cookie = `token=${res.token}`;
+              toast.success("User Logged In Successfully");
+              router.push("/home");
+            } catch (err) {
+              console.error("Backend auth failed", err);
+            }
+          },
+        });
+
+        setCodeClient(client);
+      }
+    };
+
+    loadGoogleScript();
+  }, []);
+
+  const handleGoogleLogin = () => {
+    if (codeClient) {
+      console.log('hh')
+      codeClient.requestCode(); // ✅ now this should work
+      console.log(codeClient)
+    } else {
       toast.error("Something Wrong");
     }
   };
@@ -270,6 +324,9 @@ export default function SignUp() {
           {loginModal && (
             <Button
               variant="contained"
+              onClick={() => {
+                handleGoogleLogin();
+              }}
               sx={(theme) => ({
                 backgroundColor: "#54708C",
                 fontFamily: "Lexend",

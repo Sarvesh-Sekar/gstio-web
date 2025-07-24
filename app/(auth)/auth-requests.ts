@@ -5,6 +5,8 @@ import {
   VERIFY_OTP,
   COMPLETE_SIGNUP,
   LOGIN_USER,
+  GOOGLE_CALLBACK_URL,
+  GOOGLE_ROOT_URL,
 } from "@/app/apiUrls";
 import {
   POST_REGISTER_USER,
@@ -56,4 +58,15 @@ export const postManualLogin = async (
     const response: POST_LOGIN_RESPONSE = await api.post(LOGIN_USER, payload);
     return response;
   } catch (err) {}
+};
+
+export const postGoogleLogin = async (code: string) => {
+  try {
+    const response = await api.post(GOOGLE_CALLBACK_URL, {
+      code:code,
+    });
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
 };
