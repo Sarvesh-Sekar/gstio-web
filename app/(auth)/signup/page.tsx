@@ -95,7 +95,7 @@ export default function SignUp() {
               const res = await postGoogleLogin(
                 response.code,
               );
-              document.cookie = `token=${res.token}`;
+              document.cookie = `AuthToken=${res.token}`;
               toast.success("User Logged In Successfully");
               router.push("/home");
             } catch (err) {
