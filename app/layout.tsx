@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lexend.variable} ${geistMono.variable} font-lexend antialiased`}
+        className={`${lexend.variable} ${geistMono.variable} font-lexend antialiased p-0 m-0 h-screen`}
       >
         {children}
       </body>
