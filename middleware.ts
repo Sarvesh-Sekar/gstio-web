@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = request.cookies.has("AuthToken");
-  console.log(isAuthenticated);
+  
 
   const protectedRoutes = ["/home", "/login"];
 
