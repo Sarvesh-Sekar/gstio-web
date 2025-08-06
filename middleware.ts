@@ -3,11 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = request.cookies.has("AuthToken");
-  
 
-  const protectedRoutes = ["/home", "/addInvoice" ,"/dashboard" ,"/home"];
+  const protectedRoutes = ["/home", "/addInvoice", "/dashboard", "/home"];
 
-  if ((protectedRoutes.includes(pathname) || pathname === "/") && !isAuthenticated) {
+  if (
+    (protectedRoutes.includes(pathname) || pathname === "/") &&
+    !isAuthenticated
+  ) {
     return NextResponse.redirect(new URL("/signup", request.url));
   }
 
@@ -15,8 +17,7 @@ export function middleware(request: NextRequest) {
     !!isAuthenticated &&
     (pathname === "/login" || pathname === "/signup" || pathname === "/")
   ) {
-    console.log(`Redirecting authenticated user from ${pathname} to /home`);
-    return NextResponse.redirect(new URL("/home", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 }
 

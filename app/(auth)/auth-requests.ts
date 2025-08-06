@@ -55,7 +55,7 @@ export const postManualLogin = async (
   payload: POST_LOGIN_REQUEST
 ): Promise<string | undefined> => {
   try {
-    const response: POST_LOGIN_RESPONSE = await api.post(LOGIN_USER, payload);
+    const response: string = await api.post(LOGIN_USER, payload);
     return response;
   } catch (err) {}
 };

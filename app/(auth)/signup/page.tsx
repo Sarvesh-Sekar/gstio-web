@@ -65,7 +65,7 @@ export default function SignUp() {
       const response: string = await postManualLogin(payload);
       document.cookie = `token=${response}`;
       toast.success("User Logged In Successfully");
-      router.push("/home");
+      router.push("/dashboard");
     } catch (err) {
       toast.error("Something Wrong");
     }
