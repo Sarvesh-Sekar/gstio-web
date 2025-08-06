@@ -5,9 +5,9 @@ export function middleware(request: NextRequest) {
   const isAuthenticated = request.cookies.has("AuthToken");
   
 
-  const protectedRoutes = ["/home", "/login"];
+  const protectedRoutes = ["/home", "/addInvoice" ,"/dashboard" ,"/home"];
 
-  if ((pathname === "/home" || pathname === "/") && !isAuthenticated) {
+  if ((protectedRoutes.includes(pathname) || pathname === "/") && !isAuthenticated) {
     return NextResponse.redirect(new URL("/signup", request.url));
   }
 
