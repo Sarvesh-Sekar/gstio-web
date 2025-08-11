@@ -10,45 +10,7 @@ export default function AddInvoice() {
         Create New Invoice
       </div>
       <div className="border-2 w-[50%] p-2 flex flex-col gap-y-4">
-        {/* <TextField
-          id="outlined-multiline-flexible"
-          label="Enter GST ID"
-          maxRows={1}
-          maxLength={15}
-          // className="w-full"
-          InputProps={{
-            style: { color: "white" },
-            maxLength: 15,
-          }}
-          slotProps={{ htmlInput: { maxLength: 12 } }}
-          InputLabelProps={{
-            style: { color: "#A6ADB5", fontFamily: "Lexend" },
-          }}
-          className="w-100 h-100"
-          sx={{
-            fontFamily: "Lexend",
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "#30363B",
-              borderRadius: "10px",
-              width: "10",
-              height: "100%",
-
-              "& fieldset": {
-                borderColor: "white",
-              },
-              "&:hover fieldset": {
-                borderColor: "gray",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "gray",
-              },
-            },
-            "& .MuiInputBase-input": {
-              color: "white",
-              fontFamily: "Lexend",
-            },
-          }}
-        /> */}
+      
         <TextInput
           label="Enter GST ID"
           noOfLines={1}
