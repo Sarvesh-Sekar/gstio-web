@@ -40,7 +40,7 @@ export default function SignUp() {
     event.preventDefault();
   };
 
-  const [loginModal, setLoginModal] = useState(true);
+  const [loginModal, setLoginModal] = useState(false);
 
   const handleMouseUpPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -63,7 +63,7 @@ export default function SignUp() {
   const handleManualLogin = async (payload: POST_LOGIN_REQUEST) => {
     try {
       const response: string = await postManualLogin(payload);
-      document.cookie = `token=${response}`;
+      document.cookie = `AuthToken=${response}`;
       toast.success("User Logged In Successfully");
       router.push("/dashboard");
     } catch (err) {

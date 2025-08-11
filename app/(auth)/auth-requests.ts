@@ -57,7 +57,9 @@ export const postManualLogin = async (
   try {
     const response: string = await api.post(LOGIN_USER, payload);
     return response;
-  } catch (err) {}
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const postGoogleLogin = async (code: string) => {

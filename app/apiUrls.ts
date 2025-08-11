@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getCookie } from "@/src/helpers/cookieHelper";
-export const BASE_URL = "http://localhost:4000";
+export const BASE_URL = "http://16.171.157.78:4000";
 export const REGISTER_USER = "/users/register";
 export const GENERATE_OTP = "/users/generate-otp";
 export const VERIFY_OTP = "/users/verify-otp";
