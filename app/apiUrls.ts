@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getCookie } from "@/src/helpers/cookieHelper";
-export const BASE_URL = "https://gstio-backend.run.place:4000";
+export const BASE_URL = "https://gstio-backend.run.place";
 export const REGISTER_USER = "/users/register";
 export const GENERATE_OTP = "/users/generate-otp";
 export const VERIFY_OTP = "/users/verify-otp";
