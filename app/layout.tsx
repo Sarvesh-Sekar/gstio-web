@@ -1,10 +1,15 @@
 "use client";
 import type { Metadata } from "next";
 import { Geist_Mono, Lexend } from "next/font/google";
-import "./globals.css";
-import Image from "next/image";
-import { useEffect } from "react";
-import { useRouter, usePathname, redirect } from "next/navigation";
+import "@/app/globals.css";
+import { ToastContainer } from "react-toastify";
+import Header from "@/src/components/Header";
+import { usePathname } from "next/navigation";
+import Avatar from "@mui/material/Avatar";
+import { getCookie } from "@/src/helpers/cookieHelper";
+import { sideBarData } from "@/src/helpers/staticData";
+import SideBar from "@/src/components/Sidebar";
+import ActiveHeader from "@/src/components/ActiveHeader";
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -26,18 +31,43 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
-  const currentPath = usePathname();
-  useEffect(() => {
-    if (currentPath === "/") router.push("/signup");
-  }, [currentPath]);
+  const path = usePathname();
 
+  const isAuthenticated = getCookie("AuthToken") !== null;
+
+  //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (
     <html lang="en">
       <body
-        className={`${lexend.variable} ${geistMono.variable} font-lexend antialiased`}
+        className={`${lexend.variable} ${geistMono.variable} font-lexend antialiased p-0 m-0 h-screen `}
       >
-        {children}
+        <div className={`${lexend.variable} flex flex-col font-lexend`}>
+          {isAuthenticated ? (
+            <div className="flex h-screen">
+              <SideBar />
+
+              <div className="flex flex-col h-full w-[80%]">
+                <div>
+                  <ActiveHeader />
+                </div>
+
+                {children}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Header />
+              {children}
+            </div>
+          )}
+
+          {path !== "/verifyOtp" && !isAuthenticated && (
+            <div className="flex justify-center  sm:h-[15vh] items-end w-[175vw] sm:w-full">
+              <p className="text-white">Copyright © 2025 Gst.IO</p>
+            </div>
+          )}
+          <ToastContainer />
+        </div>
       </body>
     </html>
   );
