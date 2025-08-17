@@ -28,8 +28,9 @@ export default function Header() {
 
   return (
     <>
-      <div className="sm:w-full w-[175vw] h-[10vh]  flex">
-        <div className="flex sm:w-[30%]  justify-center sm:justify-start items-center w-[175vw]">
+      <div className="sm:w-full w-[175vw] h-[10vh] relative z-20 flex">
+        <div className="flex sm:w-[30%]  justify-center sm:justify-start items-center w-[175vw] gap-x-2">
+          <div className="bg-blue-500 w-6 h-6 rounded-sm"></div>
           <div className="text-2xl">Gst.IO</div>
         </div>
         {path !== "/generateOtp" && (
