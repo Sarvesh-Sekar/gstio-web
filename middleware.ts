@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  const cookieStore = cookies();
   const isAuthenticated = request.cookies.has("AuthToken");
+  const user = request.cookies.get("userData");
+  const userData = JSON?.parse(user?.value || "{}");
 
   const protectedRoutes = ["/home", "/addInvoice", "/dashboard", "/home"];
+
+  // if (!userData?.details && pathname !== "/register") {
+  //   return NextResponse.redirect(new URL("/register", request.url));
+  // }
 
   if (
     (protectedRoutes.includes(pathname) || pathname === "/") &&

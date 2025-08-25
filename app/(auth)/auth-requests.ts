@@ -54,8 +54,11 @@ export const postCompleteSignup = async (payload: any) => {
 export const postManualLogin = async (
   payload: POST_LOGIN_REQUEST
 ): Promise<string | undefined> => {
+  console.log("hi");
   try {
+    console.log("hi");
     const response: string = await api.post(LOGIN_USER, payload);
+    console.log("hi");
     return response;
   } catch (err) {
     throw err;
@@ -65,7 +68,7 @@ export const postManualLogin = async (
 export const postGoogleLogin = async (code: string) => {
   try {
     const response = await api.post(GOOGLE_CALLBACK_URL, {
-      code:code,
+      code: code,
     });
     return response?.data;
   } catch (err) {

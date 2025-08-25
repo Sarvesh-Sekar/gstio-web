@@ -56,7 +56,10 @@ export default function RootLayout({
             </div>
           ) : (
             <div>
-              <Header />
+              <div>
+                <Header />
+              </div>
+
               {children}
             </div>
           )}

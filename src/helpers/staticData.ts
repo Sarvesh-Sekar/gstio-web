@@ -41,3 +41,4 @@ export const sideBarData = [
 ];
 
 export const isAuthenticated = getCookie("AuthToken") ? true : false;
+

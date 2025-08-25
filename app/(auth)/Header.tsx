@@ -3,6 +3,8 @@ import Button from "@mui/material/Button";
 import { usePathname } from "next/navigation";
 export default function Header() {
   const path = usePathname();
+
+  const neglectedPaths = ['/generateOtp', '/register'];
   const navContent = [
     {
       id: 1,
@@ -32,7 +34,7 @@ export default function Header() {
         <div className="flex sm:w-[30%]  justify-center sm:justify-start items-center w-[175vw]">
           <div className="text-2xl">Gst.IO</div>
         </div>
-        {path !== "/generateOtp" && (
+        {!neglectedPaths.includes(path) && (
           <div className="sm:flex border-black w-full hidden  sm:visible justify-end">
             <div className="flex   items-center gap-x-[6vw] w-[52%]">
               {navContent.map((item) => {

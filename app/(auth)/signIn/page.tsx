@@ -24,7 +24,7 @@ import {
   POST_LOGIN_RESPONSE,
 } from "@/app/(auth)/auth-requests-types";
 
-export default function SignUp() {
+export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,17 +42,81 @@ export default function SignUp() {
     event.preventDefault();
   };
 
+  
+
+  const handleMouseUpPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
+
   const handleSignUp = async (payload: POST_REGISTER_USER) => {
     try {
       const response = await postRegisterUser(payload);
-
       saveUserData(payload.email, payload.password);
-      localStorage.setItem("userData", JSON.stringify(response?.data?.user));
-      document.cookie = `userData=${JSON.stringify(response?.data?.user)}`;
 
       toast.success("User Created Successfully");
-      router.push("/register");
+      router.push("/generateOtp");
     } catch (error) {
+      toast.error("Something Wrong");
+    }
+  };
+
+  const handleManualLogin = async (payload: POST_LOGIN_REQUEST) => {
+    try {
+      const response: string = await postManualLogin(payload);
+      document.cookie = `AuthToken=${response}`;
+      toast.success("User Logged In Successfully");
+      router.push("/dashboard");
+    } catch (err) {
+      toast.error("Something Wrong");
+    }
+  };
+
+  const [codeClient, setCodeClient] = useState(null);
+
+  useEffect(() => {
+    const loadGoogleScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.onload = initializeGoogle;
+      document.body.appendChild(script);
+    };
+
+    const initializeGoogle = () => {
+      if (window.google) {
+        const client = window.google.accounts.oauth2.initCodeClient({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          scope: "openid profile email",
+          redirect_uri: "postmessage",
+
+          callback: async (response: any) => {
+            try {
+              console.log(response?.code);
+              const res = await postGoogleLogin(response.code);
+              document.cookie = `AuthToken=${res.token}`;
+              toast.success("User Logged In Successfully");
+              router.push("/home");
+            } catch (err) {
+              console.error("Backend auth failed", err);
+            }
+          },
+        });
+
+        setCodeClient(client);
+      }
+    };
+
+    loadGoogleScript();
+  }, []);
+
+  const handleGoogleLogin = () => {
+    if (codeClient) {
+      console.log("hh");
+      codeClient.requestCode(); // ✅ now this should work
+      console.log(codeClient);
+    } else {
       toast.error("Something Wrong");
     }
   };
@@ -214,135 +278,51 @@ export default function SignUp() {
                   },
                 }}
               />
-              <TextField
-                id={
-                  confirmPassword !== password
-                    ? "outlined-error-helper-text"
-                    : "outlined-password"
-                }
-                type={showConfirmPassword ? "text" : "password"}
-                label="Confirm Password"
-                value={confirmPassword}
-                onFocus={() =>
-                  setFocused({
-                    email: false,
-                    password: false,
-                    confirmPassword: true,
-                  })
-                }
-                onBlur={() =>
-                  setFocused({
-                    email: false,
-                    password: false,
-                    confirmPassword: false,
-                  })
-                }
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                error={
-                  confirmPassword !== password && confirmPassword?.length > 0
-                }
-                helperText={
-                  confirmPassword !== password && confirmPassword?.length
-                    ? "Passwords do not match"
-                    : ""
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock className="w-6 h-6 text-black" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={
-                          showConfirmPassword
-                            ? "Hide password"
-                            : "Show password"
-                        }
-                        onClick={() => {
-                          setShowConfirmPassword(!showConfirmPassword);
-                        }}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showConfirmPassword ? (
-                          <Visibility />
-                        ) : (
-                          <VisibilityOff />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{
-                  shrink: focused?.confirmPassword || Boolean(confirmPassword), // float label only when focused/has value
-                  style: {
-                    color: focused ? "black" : "black",
-                    fontFamily: "Lexend",
-                    marginLeft:
-                      focused?.confirmPassword || confirmPassword ? 0 : 32, // 👈 push label right when inside
-                  },
-                }}
-                sx={{
-                  fontFamily: "Lexend",
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "white",
-
-                    "& fieldset": {
-                      borderColor: "black",
-                      borderWidth: 2,
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "gray",
-                      borderWidth: 2,
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "black",
-                    },
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "black",
-                    fontFamily: "Lexend",
-                  },
-                  "& .MuiFormLabel-root": {
-                    color: "#A6ADB5",
-                    fontFamily: "Lexend",
-                  },
-                  "& .MuiFormLabel-root.Mui-error": {
-                    color: "red",
-                  },
-
-                  // Helper text styling
-                  "& .MuiFormHelperText-root": {
-                    fontFamily: "Lexend",
-                    color: "#A6ADB5",
-                  },
-                  "& .MuiFormHelperText-root.Mui-error": {
-                    color: "red",
-                  },
-                }}
-              />
             </div>
             <Button
               variant="contained"
-              onClick={() => handleSignUp({ email, password })}
+              onClick={() => handleManualLogin({ email, password })}
               sx={{
                 backgroundColor: "#1D4ED8",
                 fontFamily: "Lexend",
                 borderRadius: "10px",
               }}
             >
-              Sign Up
+              Login
             </Button>
-
+            <p>or</p>
+            
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleGoogleLogin();
+                }}
+                sx={(theme) => ({
+                  backgroundColor: "#1D4ED8",
+                  fontFamily: "Lexend",
+                  [theme.breakpoints.down("sm")]: {
+                    width: "50%",
+                    borderRadius: "20px",
+                  },
+                  width: "60%",
+                  borderRadius: "10px",
+                })}
+                startIcon={<GoogleIcon />}
+              >
+                Sign In With Google
+              </Button>
+            
             <div className="flex gap-x-2">
-              <p>Already have an account ?</p>
+              <p>
+                
+                  Don't have an account?
+                  
+              </p>
               <p
                 className="text-underline cursor-pointer text-[#1D4ED8]"
-                onClick={() => router.push("/signIn")}
+                onClick={() =>{router.push('/signup')}}
               >
-                Login
+                Sign Up
               </p>
             </div>
           </div>

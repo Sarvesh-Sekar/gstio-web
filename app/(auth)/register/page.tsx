@@ -1,41 +1,83 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import Checkbox from "@mui/material/Checkbox";
 import { toast } from "react-toastify";
-import Typography from "@mui/material/Typography";
 import { postCompleteSignup } from "@/app/(auth)/auth-requests";
 import userStore from "@/src/stores/userStore";
-import {useRouter} from "next/navigation";
-export default function Register() {
-  const [username, setUserName] = useState("");
+import { useRouter } from "next/navigation";
+import { Card } from "@mui/material";
+import { InputAdornment } from "@mui/material";
+import { Users, Building2, University, IdCard } from "lucide-react";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import Radio from "@mui/material/Radio";
+import { debounce } from "lodash";
+import Typography from "@mui/material/Typography";
+
+export default function register() {
+  const [userName, setUserName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [gstId, setGstId] = useState("");
   const [termsAccepted, setIsTermsAccepted] = useState(false);
+  const [role, setRole] = useState("");
 
   const router = useRouter();
 
   const userData = userStore((state) => state.userData);
 
-
   const handleCompleteSignUp = async () => {
     try {
-        console.log(userData);
       const response = await postCompleteSignup({
         email: userData?.email,
         username: username,
       });
       toast.success("User Created Successfully");
-      router.push('/home');
+      router.push("/home");
     } catch (err) {
       toast.error("Something Wrong");
     }
   };
 
+  const [focus, setFocus] = useState({
+    userName: false,
+    companyName: false,
+    gstId: false,
+    role: false,
+    verfied: false,
+  });
+
+  const [error, setError] = useState({
+    gstId: false,
+  });
+
+  const debouncedApiCall = useMemo(
+    () =>
+      debounce((newValue) => {
+        if (!newValue) setError((prev) => ({ ...prev, gstId: false }));
+        else {
+          console.log("hi  ", newValue);
+          setError((prev) => ({ ...prev, gstId: true }));
+        }
+      }, 1500),
+
+    []
+  );
+
+  const handleGstId = (e) => {
+    const newValue = e.target.value;
+    setGstId(newValue);
+    debouncedApiCall(newValue);
+  };
+
   return (
     <div className="flex flex-col gap-y-[5vh] items-center justify-center">
-      <div className="text-3xl">Complete Your Sign Up here !!!</div>
-      <TextField
+      {/* <div className="text-3xl">Complete Your Sign Up here !!!</div> */}
+      {/* <TextField
         id="outlined-multiline-flexible"
         label="Enter your Username"
         value={username}
@@ -99,7 +141,276 @@ export default function Register() {
         }}
       >
         Complete Registration
-      </Button>
+      </Button> */}
+
+      <Card
+        sx={{ maxWidth: "50%" }}
+        className="border-2 border-gray w-[50%] h-[90vh] z-10 shadow-3xl flex justify-center gap-y-2"
+      >
+        <div className="flex flex-col items-center gap-y-2">
+          <div className="h-[60px] w-[60px] mt-2 bg-[#1D4ED8] flex justify-center items-center rounded-[60px]">
+            <Building2 className="w-6 h-6 text-white" />
+          </div>
+
+          <div className="text-2xl">Profile Details</div>
+          <div className="text-sm">Complete your profile to get started !!</div>
+
+          <div className="flex flex-col m-2 h-full gap-y-[3vh]">
+            <TextField
+              id="outlined-flexible"
+              label="Enter Username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              onFocus={() => {
+                setFocus({
+                  userName: true,
+                  companyName: false,
+                  gstId: false,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              onBlur={() => {
+                setFocus({
+                  userName: false,
+                  companyName: false,
+                  gstId: false,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Users className="w-6 h-6 text-black" />
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                shrink: focus?.userName || Boolean(userName), // float label only when focused/has value
+                style: {
+                  color: focus?.userName ? "black" : "black",
+                  fontFamily: "Lexend",
+                  marginLeft: focus?.userName || userName ? 0 : 32, // 👈 push label right when inside
+                },
+              }}
+              sx={{
+                fontFamily: "Lexend",
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "white",
+
+                  "& fieldset": {
+                    borderColor: "black",
+                    borderWidth: 2,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "gray",
+                    borderWidth: 2,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "black",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "black",
+                  fontFamily: "Lexend",
+                },
+              }}
+            />
+            <TextField
+              id="outlined-multiline-flexible"
+              label="Enter GST ID "
+              value={gstId}
+              onChange={handleGstId}
+              error={error?.gstId}
+              helperText={error?.gstId ? "Invalid GST ID" : ""}
+              onFocus={() => {
+                setFocus({
+                  userName: false,
+                  companyName: false,
+                  gstId: true,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              onBlur={() => {
+                setFocus({
+                  userName: false,
+                  companyName: false,
+                  gstId: false,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IdCard className="w-6 h-6 text-black" />
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                shrink: focus?.gstId || Boolean(gstId), // float label only when focused/has value
+                style: {
+                  color: focus?.gstId ? "black" : "black",
+                  fontFamily: "Lexend",
+                  marginLeft: focus?.gstId || gstId ? 0 : 32, // 👈 push label right when inside
+                },
+              }}
+              sx={{
+                fontFamily: "Lexend",
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "white",
+
+                  "& fieldset": {
+                    borderColor: "black",
+                    borderWidth: 2,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "gray",
+                    borderWidth: 2,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "black",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "black",
+                  fontFamily: "Lexend",
+                },
+                "& .MuiFormHelperText-root": {
+                  fontFamily: "Lexend",
+                  color: "#A6ADB5",
+                },
+                "& .MuiFormHelperText-root.Mui-error": {
+                  color: "red",
+                },
+              }}
+            />
+            <TextField
+              id="outlined-multiline-flexible"
+              label="Enter Company Name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              onFocus={() => {
+                setFocus({
+                  userName: false,
+                  companyName: true,
+                  gstId: false,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              onBlur={() => {
+                setFocus({
+                  userName: false,
+                  companyName: false,
+                  gstId: false,
+                  role: false,
+                  verfied: false,
+                });
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <University className="w-6 h-6 text-black" />
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                shrink: focus?.companyName || Boolean(companyName), // float label only when focused/has value
+                style: {
+                  color: focus?.companyName ? "black" : "black",
+                  fontFamily: "Lexend",
+                  marginLeft: focus?.companyName || companyName ? 0 : 32, // 👈 push label right when inside
+                },
+              }}
+              sx={{
+                fontFamily: "Lexend",
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "white",
+
+                  "& fieldset": {
+                    borderColor: "black",
+                    borderWidth: 2,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "gray",
+                    borderWidth: 2,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "black",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "black",
+                  fontFamily: "Lexend",
+                },
+              }}
+            />
+            <FormControl>
+              <div>Role</div>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="female"
+                name="radio-buttons-group"
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <FormControlLabel
+                  value="Company Admin"
+                  control={<Radio />}
+                  label={
+                    <Typography sx={{ fontFamily: "Lexend" }}>
+                      Company Admin
+                    </Typography>
+                  }
+                />
+                <FormControlLabel
+                  value="Auditor"
+                  control={<Radio />}
+                  label={
+                    <Typography sx={{ fontFamily: "Lexend" }}>
+                      Auditor
+                    </Typography>
+                  }
+                />
+              </RadioGroup>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={termsAccepted}
+                  onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                  sx={{
+                    color: "#A6ADB5", // Color of the checkbox when unchecked
+                    "&.Mui-checked": {
+                      color: "#54708C", // Color of the checkbox when checked
+                    },
+                  }}
+                />
+              }
+              label={
+                <Typography sx={{ color: "black", fontFamily: "Lexend" }}>
+                  I have accepted all terms and Conditions
+                </Typography>
+              }
+            />
+            <Button
+              variant="contained"
+              onClick={() => {}}
+              disabled={!termsAccepted}
+              sx={{
+                backgroundColor: termsAccepted ? "#1D4ED8" : "white",
+                fontFamily: "Lexend",
+                borderRadius: "10px",
+              }}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }
