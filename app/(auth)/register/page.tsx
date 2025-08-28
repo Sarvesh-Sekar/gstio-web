@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
@@ -18,30 +18,24 @@ import FormLabel from "@mui/material/FormLabel";
 import Radio from "@mui/material/Radio";
 import { debounce } from "lodash";
 import Typography from "@mui/material/Typography";
+import { getGstVerified } from "@/app/(auth)/auth-requests";
+import {CircularProgress} from "@mui/material";
+import {userData,updateUserData} from "@/src/helpers/staticData";
 
 export default function register() {
   const [userName, setUserName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [gstId, setGstId] = useState("");
+  const [isLoading,setIsLoading] = useState(false);
   const [termsAccepted, setIsTermsAccepted] = useState(false);
   const [role, setRole] = useState("");
+  const [checkCompanyName, setCheckCompanyName] = useState("");
+  const [helperMessage, setHelperMessage] = useState({
+    gstId: "",
+    companyName: "",
+  });
 
   const router = useRouter();
-
-  const userData = userStore((state) => state.userData);
-
-  const handleCompleteSignUp = async () => {
-    try {
-      const response = await postCompleteSignup({
-        email: userData?.email,
-        username: username,
-      });
-      toast.success("User Created Successfully");
-      router.push("/home");
-    } catch (err) {
-      toast.error("Something Wrong");
-    }
-  };
 
   const [focus, setFocus] = useState({
     userName: false,
@@ -51,8 +45,76 @@ export default function register() {
     verfied: false,
   });
 
+  
+
+  const completeRegistration = async () => {
+
+    
+    const payload = {
+      userId: userData?.userId,
+      userName: userName,
+      gstId: gstId,
+      companyName: companyName,
+      role: role,
+    };
+    try {
+      setIsLoading(true);
+      const response = await postCompleteSignup(payload);
+      toast.success("User Registration Completed Successfully");
+      
+      const modifiedUserData = 
+      {
+        userId:userData?.userId,
+        details:true,
+        verified:false
+      }
+      updateUserData(modifiedUserData);
+      
+      
+      router.push('/generateOtp')
+    } catch (err) {
+      toast.error("User Registration Failed");
+    }
+    finally
+    {
+      setIsLoading(false);
+    }
+  };
+
+  const checkGstId = async (value: string) => {
+    const response = await getGstVerified(value);
+    console.log(response?.data?.taxpayerInfo?.lgnm + "companyName");
+
+    if (response?.data?.error) {
+      if (response?.data?.message.includes(403))
+        setHelperMessage((prev) => ({
+          ...prev,
+          gstId: "Invalid GST ID",
+        }));
+      else setHelperMessage((prev)=>(
+        {
+          ...prev,
+          gstId:response?.data?.message
+        }
+      ));
+
+      setError((prev) => ({ ...prev, gstId: true }));
+    }
+
+    if (response?.data?.taxpayerInfo) {
+      setCompanyName(response?.data?.taxpayerInfo?.lgnm);
+      setCheckCompanyName(response?.data?.taxpayerInfo?.lgnm);
+      setError((prev) => ({ ...prev, gstId: false }));
+      setHelperMessage((prev) => ({
+        ...prev,
+        gstId: "Valid GST ID",
+      }));
+    }
+  };
+
   const [error, setError] = useState({
     gstId: false,
+    companyName: false,
   });
 
   const debouncedApiCall = useMemo(
@@ -60,20 +122,107 @@ export default function register() {
       debounce((newValue) => {
         if (!newValue) setError((prev) => ({ ...prev, gstId: false }));
         else {
-          console.log("hi  ", newValue);
-          setError((prev) => ({ ...prev, gstId: true }));
+          checkGstId(newValue);
         }
-      }, 1500),
+      }, 500),
 
     []
   );
 
   const handleGstId = (e) => {
     const newValue = e.target.value;
+
+    if (!newValue)
+      setHelperMessage((prev) => ({
+        ...prev,
+        gstId: "",
+      }));
     setGstId(newValue);
     debouncedApiCall(newValue);
   };
 
+  const handleCompanyChange = (e) => {
+    const newValue = e.target.value;
+    setCompanyName(newValue);
+    if (!newValue && !companyName) {
+      setHelperMessage((prev) => ({
+        ...prev,
+        companyName: "First Fill GST ID",
+      }));
+      setError((prev) => ({
+        ...prev,
+        companyName: true,
+      }));
+    }
+    if (!newValue) {
+      setHelperMessage((prev) => ({
+        ...prev,
+        companyName: "",
+      }));
+      setError((prev) => ({
+        ...prev,
+        companyName: false,
+      }));
+    }
+
+    debounceCompanyCheck(newValue, checkCompanyName);
+  };
+
+  const debounceCompanyCheck = useMemo(
+    () =>
+      debounce((newValue) => {
+        if (!newValue) setError((prev) => ({ ...prev, companyName: false }));
+        else {
+          console.log(checkCompanyName);
+          checkCompany(newValue);
+        }
+      }, 1500),
+    [companyName]
+  );
+
+  const checkCompany = (value: string) => {
+    console.log(value + " " + checkCompanyName);
+    if (checkCompanyName !== value) {
+      console.log("came");
+      setHelperMessage((prev) => ({
+        ...prev,
+        companyName: "Company Name not matches with GST ID    Company",
+      }));
+
+      setError((prev) => ({
+        ...prev,
+        companyName: true,
+      }));
+    } else {
+      console.log("dd");
+      setHelperMessage((prev) => ({
+        ...prev,
+        companyName: "",
+      }));
+
+      setError((prev) => ({
+        ...prev,
+        companyName: false,
+      }));
+    }
+  };
+
+  //   if (!companyName) return;
+
+  //   checkCompany(companyName);
+  //   // if (companyName !== checkCompanyName) {
+  //   //   setHelperMessage((prev) => ({
+  //   //     ...prev,
+  //   //     companyName: "Company Name not matches with GST ID Company",
+  //   //   }));
+  //   //   setError((prev) => ({ ...prev, companyName: true }));
+  //   // } else {
+  //   //   setHelperMessage((prev) => ({ ...prev, companyName: "" }));
+  //   //   setError((prev) => ({ ...prev, companyName: false }));
+  //   // }
+  // }, [companyName]);
+
+  const hasError = Object.values(error).some((value) => value === true) || !termsAccepted || !companyName || !gstId || !userName || !role;
   return (
     <div className="flex flex-col gap-y-[5vh] items-center justify-center">
       {/* <div className="text-3xl">Complete Your Sign Up here !!!</div> */}
@@ -145,7 +294,7 @@ export default function register() {
 
       <Card
         sx={{ maxWidth: "50%" }}
-        className="border-2 border-gray w-[50%] h-[90vh] z-10 shadow-3xl flex justify-center gap-y-2"
+        className="border-2 border-gray w-[50%] h-[95vh] z-10 shadow-3xl flex justify-center gap-y-2"
       >
         <div className="flex flex-col items-center gap-y-2">
           <div className="h-[60px] w-[60px] mt-2 bg-[#1D4ED8] flex justify-center items-center rounded-[60px]">
@@ -223,7 +372,7 @@ export default function register() {
               value={gstId}
               onChange={handleGstId}
               error={error?.gstId}
-              helperText={error?.gstId ? "Invalid GST ID" : ""}
+              helperText={helperMessage?.gstId}
               onFocus={() => {
                 setFocus({
                   userName: false,
@@ -278,12 +427,13 @@ export default function register() {
                   color: "black",
                   fontFamily: "Lexend",
                 },
-                "& .MuiFormHelperText-root": {
-                  fontFamily: "Lexend",
-                  color: "#A6ADB5",
-                },
+
                 "& .MuiFormHelperText-root.Mui-error": {
                   color: "red",
+                },
+                "& .MuiFormHelperText-root": {
+                  fontFamily: "Lexend",
+                  color: "green",
                 },
               }}
             />
@@ -291,7 +441,9 @@ export default function register() {
               id="outlined-multiline-flexible"
               label="Enter Company Name"
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+              error={error?.companyName}
+              helperText={helperMessage?.companyName} // 👈 bind here
+              onChange={handleCompanyChange}
               onFocus={() => {
                 setFocus({
                   userName: false,
@@ -318,18 +470,17 @@ export default function register() {
                 ),
               }}
               InputLabelProps={{
-                shrink: focus?.companyName || Boolean(companyName), // float label only when focused/has value
+                shrink: focus?.companyName || Boolean(companyName),
                 style: {
                   color: focus?.companyName ? "black" : "black",
                   fontFamily: "Lexend",
-                  marginLeft: focus?.companyName || companyName ? 0 : 32, // 👈 push label right when inside
+                  marginLeft: focus?.companyName || companyName ? 0 : 32,
                 },
               }}
               sx={{
                 fontFamily: "Lexend",
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
-
                   "& fieldset": {
                     borderColor: "black",
                     borderWidth: 2,
@@ -346,8 +497,16 @@ export default function register() {
                   color: "black",
                   fontFamily: "Lexend",
                 },
+                "& .MuiFormHelperText-root.Mui-error": {
+                  color: "red",
+                },
+                "& .MuiFormHelperText-root": {
+                  fontFamily: "Lexend",
+                  color: "green",
+                },
               }}
             />
+
             <FormControl>
               <div>Role</div>
               <RadioGroup
@@ -398,15 +557,22 @@ export default function register() {
             />
             <Button
               variant="contained"
-              onClick={() => {}}
-              disabled={!termsAccepted}
+              onClick={() => completeRegistration()}
+              disabled={hasError}
               sx={{
                 backgroundColor: termsAccepted ? "#1D4ED8" : "white",
                 fontFamily: "Lexend",
                 borderRadius: "10px",
               }}
             >
-              Sign Up
+              {isLoading ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: "white" }} />
+                  
+                </>
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </div>
         </div>

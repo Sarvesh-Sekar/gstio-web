@@ -1,3 +1,4 @@
+'use client';
 import { sideBarData } from "@/src/helpers/staticData";
 import { useRouter } from "next/navigation";
 import "@/app/globals.css";

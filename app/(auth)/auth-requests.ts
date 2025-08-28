@@ -7,6 +7,8 @@ import {
   LOGIN_USER,
   GOOGLE_CALLBACK_URL,
   GOOGLE_ROOT_URL,
+  GST_VERIFICATION_URL,
+  COMPLETE_REGISTRATION_URL,
 } from "@/app/apiUrls";
 import {
   POST_REGISTER_USER,
@@ -26,6 +28,7 @@ export const postRegisterUser = async (payload: POST_REGISTER_USER) => {
 
 export const postGenerateOtp = async (payload: any) => {
   try {
+    console.log(payload);
     const response = await api.post(GENERATE_OTP, payload);
     return response;
   } catch (err) {
@@ -51,14 +54,24 @@ export const postCompleteSignup = async (payload: any) => {
   }
 };
 
-export const postManualLogin = async (
-  payload: POST_LOGIN_REQUEST
-): Promise<string | undefined> => {
-  console.log("hi");
+export const postManualLogin = async (payload: POST_LOGIN_REQUEST) => {
   try {
-    console.log("hi");
-    const response: string = await api.post(LOGIN_USER, payload);
-    console.log("hi");
+    const response = await api.post(LOGIN_USER, payload);
+    console.log(response?.data?.token + " RES");
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getGstVerified = async (value: string) => {
+  try {
+    const response = await api.get(GST_VERIFICATION_URL, {
+      params: {
+        gstNo: value,
+        key_secret: process.env.NEXT_PUBLIC_GST_SECRET,
+      },
+    });
     return response;
   } catch (err) {
     throw err;

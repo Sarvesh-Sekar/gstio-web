@@ -2,21 +2,30 @@
 import Button from "@mui/material/Button";
 import React, { useState } from "react";
 import userStore from "@/src/stores/userStore";
+import { userData, updateUserData } from "@/src/helpers/staticData";
 import { postGenerateOtp, postVerifyOtp } from "@/app/(auth)/auth-requests";
 import TextField from "@mui/material/TextField";
 import { toast } from "react-toastify";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import InputAdornment from "@mui/material/InputAdornment";
+import { MonitorSmartphone } from "lucide-react";
 
 export default function generateOtp() {
   const [isOpenVerify, setIsOpenVerify] = useState(false);
   const [otp, setOtp] = useState("");
 
+  const [focus, setFocus] = useState(false);
   const router = useRouter();
-  const userData = userStore((state) => state.userData);
 
   const handleGenerateOtp = async () => {
     try {
-      await postGenerateOtp({email:userData?.email});
+      
+      console.log(userData);
+      const payload = {
+        userId: userData?.userId,
+        email: userData?.email,
+      }
+      await postGenerateOtp(payload);
       toast.success("OTP Sent Successfully");
       setIsOpenVerify(true);
     } catch (err) {
@@ -26,9 +35,18 @@ export default function generateOtp() {
 
   const handleVerifyOtp = async () => {
     try {
-      await postVerifyOtp({ email: userData?.email, otp: otp });
-      router.push('/register');
+      const response = await postVerifyOtp({ userId: userData?.userId, otp: otp });
+
       toast.success("OTP Verified Successfully");
+      const modifiedUserData = {
+        userId: userData?.userId,
+        details: true,
+        verified: true,
+      };
+
+      updateUserData(modifiedUserData);
+      document.cookie = `AuthToken=${JSON.stringify(response?.data?.token)}`;
+      router.push("/dashboard");
     } catch (err) {
       toast.error("Something Wrong");
     }
@@ -45,33 +63,46 @@ export default function generateOtp() {
 
       {isOpenVerify && (
         <TextField
-          id="outlined-multiline-flexible"
-          label="Enter Otp"
+          id="outlined-flexible"
+          label="Enter OTP Here"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
           InputProps={{
-            style: { color: "white" },
+            startAdornment: (
+              <InputAdornment position="start">
+                <MonitorSmartphone className="w-6 h-6 text-black" />
+              </InputAdornment>
+            ),
           }}
           InputLabelProps={{
-            style: { color: "#A6ADB5", fontFamily: "Lexend" },
+            shrink: focus || Boolean(otp), // float label only when focused/has value
+            style: {
+              color: focus ? "black" : "black",
+              fontFamily: "Lexend",
+              marginLeft: focus || otp ? 0 : 32, // 👈 push label right when inside
+            },
           }}
           sx={{
             fontFamily: "Lexend",
             "& .MuiOutlinedInput-root": {
-              backgroundColor: "#30363B",
+              backgroundColor: "white",
 
               "& fieldset": {
-                borderColor: "white",
+                borderColor: "black",
+                borderWidth: 2,
               },
               "&:hover fieldset": {
                 borderColor: "gray",
+                borderWidth: 2,
               },
               "&.Mui-focused fieldset": {
-                borderColor: "white",
+                borderColor: "black",
               },
             },
             "& .MuiInputBase-input": {
-              color: "white",
+              color: "black",
               fontFamily: "Lexend",
             },
           }}
@@ -84,7 +115,7 @@ export default function generateOtp() {
             handleGenerateOtp();
           }}
           sx={{
-            backgroundColor: "#54708C",
+            backgroundColor: "#1D4ED8",
             fontFamily: "Lexend",
           }}
         >
@@ -97,7 +128,7 @@ export default function generateOtp() {
             handleVerifyOtp();
           }}
           sx={{
-            backgroundColor: "#54708C",
+            backgroundColor: "#1D4ED8",
             fontFamily: "Lexend",
           }}
         >

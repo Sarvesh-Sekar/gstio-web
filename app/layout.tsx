@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   const path = usePathname();
 
-  const isAuthenticated = getCookie("AuthToken") !== null;
+  const isAuthenticated = getCookie("AuthToken") !== 'null';
 
   //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (

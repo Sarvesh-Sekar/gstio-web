@@ -64,8 +64,9 @@ export default function SignIn() {
 
   const handleManualLogin = async (payload: POST_LOGIN_REQUEST) => {
     try {
-      const response: string = await postManualLogin(payload);
-      document.cookie = `AuthToken=${response}`;
+      const response = await postManualLogin(payload);
+      // console.log(JSON.stringify(response) + " RES");
+      document.cookie = `AuthToken=${response?.data?.token}`;
       toast.success("User Logged In Successfully");
       router.push("/dashboard");
     } catch (err) {
@@ -97,7 +98,7 @@ export default function SignIn() {
               const res = await postGoogleLogin(response.code);
               document.cookie = `AuthToken=${res.token}`;
               toast.success("User Logged In Successfully");
-              router.push("/home");
+              router.push("/dashboard");
             } catch (err) {
               console.error("Backend auth failed", err);
             }
