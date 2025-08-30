@@ -33,7 +33,9 @@ export default function RootLayout({
 }>) {
   const path = usePathname();
 
-  const isAuthenticated = getCookie("AuthToken") !== 'null';
+  const isAuthenticated =
+    getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
+  console.log(getCookie("AuthToken"));
 
   //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (
@@ -42,7 +44,15 @@ export default function RootLayout({
         className={`${lexend.variable} ${geistMono.variable} font-lexend antialiased p-0 m-0 h-screen `}
       >
         <div className={`${lexend.variable} flex flex-col font-lexend`}>
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
+            <div>
+              <div>
+                <Header />
+              </div>
+
+              {children}
+            </div>
+          ) : (
             <div className="flex h-screen">
               <SideBar />
 
@@ -53,14 +63,6 @@ export default function RootLayout({
 
                 {children}
               </div>
-            </div>
-          ) : (
-            <div>
-              <div>
-                <Header />
-              </div>
-
-              {children}
             </div>
           )}
 

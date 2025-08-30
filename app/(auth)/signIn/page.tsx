@@ -67,6 +67,7 @@ export default function SignIn() {
       const response = await postManualLogin(payload);
       // console.log(JSON.stringify(response) + " RES");
       document.cookie = `AuthToken=${response?.data?.token}`;
+      localStorage.setItem("userData", JSON.stringify(response?.data?.user));
       toast.success("User Logged In Successfully");
       router.push("/dashboard");
     } catch (err) {

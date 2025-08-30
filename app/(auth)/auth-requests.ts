@@ -9,6 +9,7 @@ import {
   GOOGLE_ROOT_URL,
   GST_VERIFICATION_URL,
   COMPLETE_REGISTRATION_URL,
+  GET_USER_DATA,
 } from "@/app/apiUrls";
 import {
   POST_REGISTER_USER,
@@ -83,6 +84,15 @@ export const postGoogleLogin = async (code: string) => {
     const response = await api.post(GOOGLE_CALLBACK_URL, {
       code: code,
     });
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getUserData = async (payload: any) => {
+  try {
+    const response = await api.post(GET_USER_DATA, payload);
     return response?.data;
   } catch (err) {
     throw err;

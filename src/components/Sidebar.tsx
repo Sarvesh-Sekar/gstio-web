@@ -5,8 +5,8 @@ import "@/app/globals.css";
 export default function SideBar() {
   const router = useRouter();
   return (
-    <div className="w-[20%] flex flex-col items-center justify-start h-full border-r-2 border-white/10 ">
-      <div className="flex justify-center items-center border-b-2 border-white/10 w-full h-[65px] text-3xl">
+    <div className="w-[20%] flex flex-col items-center justify-start h-full border-r-2 border-black ">
+      <div className="flex justify-center items-center border-b-2 border-black w-full h-[65px] text-3xl">
         GST.IO
       </div>
       <div className="w-full mt-4">
