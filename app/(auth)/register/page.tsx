@@ -19,14 +19,14 @@ import Radio from "@mui/material/Radio";
 import { debounce } from "lodash";
 import Typography from "@mui/material/Typography";
 import { getGstVerified } from "@/app/(auth)/auth-requests";
-import {CircularProgress} from "@mui/material";
-import {userData,updateUserData} from "@/src/helpers/staticData";
+import { CircularProgress } from "@mui/material";
+import { userData, updateUserData } from "@/src/helpers/staticData";
 
 export default function register() {
   const [userName, setUserName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [gstId, setGstId] = useState("");
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setIsTermsAccepted] = useState(false);
   const [role, setRole] = useState("");
   const [checkCompanyName, setCheckCompanyName] = useState("");
@@ -45,11 +45,7 @@ export default function register() {
     verfied: false,
   });
 
-  
-
   const completeRegistration = async () => {
-
-    
     const payload = {
       userId: userData?.userId,
       userName: userName,
@@ -61,53 +57,58 @@ export default function register() {
       setIsLoading(true);
       const response = await postCompleteSignup(payload);
       toast.success("User Registration Completed Successfully");
-      
-      const modifiedUserData = 
-      {
-        userId:userData?.userId,
-        details:true,
-        verified:false
-      }
+
+      const modifiedUserData = {
+        userId: userData?.userId,
+        details: true,
+        verified: false,
+      };
       updateUserData(modifiedUserData);
-      
-      
-      router.push('/generateOtp')
+
+      router.push("/generateOtp");
     } catch (err) {
       toast.error("User Registration Failed");
-    }
-    finally
-    {
+    } finally {
       setIsLoading(false);
     }
   };
 
   const checkGstId = async (value: string) => {
-    const response = await getGstVerified(value);
-    console.log(response?.data?.taxpayerInfo?.lgnm + "companyName");
+    try {
+      const response = await getGstVerified(value);
+      console.log(response);
 
-    if (response?.data?.error) {
-      if (response?.data?.message.includes(403))
+     
+
+      if (response?.data?.error) {
+        if (response?.data?.message.includes(403))
+          setHelperMessage((prev) => ({
+            ...prev,
+            gstId: "Invalid GST ID",
+          }));
+        else
+          setHelperMessage((prev) => ({
+            ...prev,
+            gstId: response?.data?.message,
+          }));
+
+        setError((prev) => ({ ...prev, gstId: true }));
+      }
+
+      if (response?.data?.taxpayerInfo) {
+        setCompanyName(response?.data?.taxpayerInfo?.lgnm);
+        setCheckCompanyName(response?.data?.taxpayerInfo?.lgnm);
+        setError((prev) => ({ ...prev, gstId: false }));
         setHelperMessage((prev) => ({
           ...prev,
-          gstId: "Invalid GST ID",
+          gstId: "Valid GST ID",
         }));
-      else setHelperMessage((prev)=>(
-        {
-          ...prev,
-          gstId:response?.data?.message
-        }
-      ));
-
+      }
+    } catch (err) {
       setError((prev) => ({ ...prev, gstId: true }));
-    }
-
-    if (response?.data?.taxpayerInfo) {
-      setCompanyName(response?.data?.taxpayerInfo?.lgnm);
-      setCheckCompanyName(response?.data?.taxpayerInfo?.lgnm);
-      setError((prev) => ({ ...prev, gstId: false }));
       setHelperMessage((prev) => ({
         ...prev,
-        gstId: "Valid GST ID",
+        gstId: err?.data?.message,
       }));
     }
   };
@@ -121,7 +122,13 @@ export default function register() {
     () =>
       debounce((newValue) => {
         if (!newValue) setError((prev) => ({ ...prev, gstId: false }));
-        else {
+        else if (newValue.length < 15) {
+          setError((prev) => ({ ...prev, gstId: true }));
+          setHelperMessage((prev) => ({
+            ...prev,
+            gstId: "GST ID should be 15 digits",
+          }));
+        } else {
           checkGstId(newValue);
         }
       }, 500),
@@ -222,7 +229,13 @@ export default function register() {
   //   // }
   // }, [companyName]);
 
-  const hasError = Object.values(error).some((value) => value === true) || !termsAccepted || !companyName || !gstId || !userName || !role;
+  const hasError =
+    Object.values(error).some((value) => value === true) ||
+    !termsAccepted ||
+    !companyName ||
+    !gstId ||
+    !userName ||
+    !role;
   return (
     <div className="flex flex-col gap-y-[5vh] items-center justify-center">
       {/* <div className="text-3xl">Complete Your Sign Up here !!!</div> */}
@@ -568,7 +581,6 @@ export default function register() {
               {isLoading ? (
                 <>
                   <CircularProgress size={20} sx={{ color: "white" }} />
-                  
                 </>
               ) : (
                 "Sign Up"

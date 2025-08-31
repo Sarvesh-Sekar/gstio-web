@@ -7,7 +7,7 @@ import {
   LOGIN_USER,
   GOOGLE_CALLBACK_URL,
   GOOGLE_ROOT_URL,
-  GST_VERIFICATION_URL,
+  VERIFY_GST,
   COMPLETE_REGISTRATION_URL,
   GET_USER_DATA,
 } from "@/app/apiUrls";
@@ -67,15 +67,12 @@ export const postManualLogin = async (payload: POST_LOGIN_REQUEST) => {
 
 export const getGstVerified = async (value: string) => {
   try {
-    const response = await api.get(GST_VERIFICATION_URL, {
-      params: {
-        gstNo: value,
-        key_secret: process.env.NEXT_PUBLIC_GST_SECRET,
-      },
+    const response = await api.post(VERIFY_GST, {
+      gstId: value,
     });
     return response;
   } catch (err) {
-    throw err;
+    throw err?.response;
   }
 };
 

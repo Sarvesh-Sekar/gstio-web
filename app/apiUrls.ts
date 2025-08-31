@@ -8,7 +8,7 @@ export const COMPLETE_SIGNUP = "/users/signup";
 export const LOGIN_USER = "/users/login";
 export const GOOGLE_CALLBACK_URL = BASE_URL + "/users/auth/google";
 export const GOOGLE_ROOT_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-export const GST_VERIFICATION_URL = "https://appyflow.in/api/verifyGST";
+export const VERIFY_GST = "/users/verify-gst";
 export const COMPLETE_REGISTRATION_URL = "/users/signup"
 export const GET_USER_DATA = "/users/myData";
 
