@@ -1,10 +1,11 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import Checkbox from "@mui/material/Checkbox";
 import { toast } from "react-toastify";
+import TextInput from "@/src/components/TextInput";
 import { postCompleteSignup } from "@/app/(auth)/auth-requests";
 import userStore from "@/src/stores/userStore";
 import { useRouter } from "next/navigation";
@@ -78,8 +79,6 @@ export default function register() {
       const response = await getGstVerified(value);
       console.log(response);
 
-     
-
       if (response?.data?.error) {
         if (response?.data?.message.includes(403))
           setHelperMessage((prev) => ({
@@ -121,7 +120,12 @@ export default function register() {
   const debouncedApiCall = useMemo(
     () =>
       debounce((newValue) => {
-        if (!newValue) setError((prev) => ({ ...prev, gstId: false }));
+        if (!newValue) 
+          {setError((prev) => ({ ...prev, gstId: false }));
+          setHelperMessage((prev) => ({
+            ...prev,
+            gstId: "",
+          }))}
         else if (newValue.length < 15) {
           setError((prev) => ({ ...prev, gstId: true }));
           setHelperMessage((prev) => ({
@@ -133,7 +137,7 @@ export default function register() {
         }
       }, 500),
 
-    []
+    [gstId]
   );
 
   const handleGstId = (e) => {
@@ -151,7 +155,8 @@ export default function register() {
   const handleCompanyChange = (e) => {
     const newValue = e.target.value;
     setCompanyName(newValue);
-    if (!newValue && !companyName) {
+    console.log(!!newValue?.length + " " + !gstId?.length + " " + !newValue?.length);
+    if (!gstId?.length && !!newValue?.length) {
       setHelperMessage((prev) => ({
         ...prev,
         companyName: "First Fill GST ID",
@@ -160,8 +165,7 @@ export default function register() {
         ...prev,
         companyName: true,
       }));
-    }
-    if (!newValue) {
+    } else if(!newValue) {
       setHelperMessage((prev) => ({
         ...prev,
         companyName: "",
@@ -170,9 +174,7 @@ export default function register() {
         ...prev,
         companyName: false,
       }));
-    }
-
-    debounceCompanyCheck(newValue, checkCompanyName);
+    } else debounceCompanyCheck(newValue, checkCompanyName);
   };
 
   const debounceCompanyCheck = useMemo(
@@ -190,7 +192,6 @@ export default function register() {
   const checkCompany = (value: string) => {
     console.log(value + " " + checkCompanyName);
     if (checkCompanyName !== value) {
-      console.log("came");
       setHelperMessage((prev) => ({
         ...prev,
         companyName: "Company Name not matches with GST ID    Company",
@@ -318,7 +319,30 @@ export default function register() {
           <div className="text-sm">Complete your profile to get started !!</div>
 
           <div className="flex flex-col m-2 h-full gap-y-[3vh]">
-            <TextField
+            {/* <TextInput 
+              label="Enter Company Name"
+              value={companyName}
+              backgroundColor={"#FFFFFF"}
+              color={"#000000"}
+              noOfLines={1}
+              setValue={setCompanyName}
+              helperMessage={helperMessage?.companyName}
+              error={error?.companyName}
+              type="text"
+              icon = {<Users className="w-6 h-6 text-black" />}
+              /> */}
+            <TextInput
+              label="Enter Username"
+              value={userName}
+              backgroundColor={"#FFFFFF"}
+              color={"#000000"}
+              noOfLines={1}
+              setValue={setUserName}
+              type="text"
+              icon={<Users className="w-6 h-6 text-black" />}
+            />
+
+            {/* <TextField
               id="outlined-flexible"
               label="Enter Username"
               value={userName}
@@ -378,8 +402,8 @@ export default function register() {
                   fontFamily: "Lexend",
                 },
               }}
-            />
-            <TextField
+            /> */}
+            {/* <TextField
               id="outlined-multiline-flexible"
               label="Enter GST ID "
               value={gstId}
@@ -449,8 +473,37 @@ export default function register() {
                   color: "green",
                 },
               }}
+            /> */}
+
+            <TextInput
+              label="Enter GST ID"
+              value={gstId}
+              backgroundColor={"#FFFFFF"}
+              color={"#000000"}
+              noOfLines={1}
+              setValue={setGstId}
+              type="text"
+              icon={<IdCard className="w-6 h-6 text-black" />}
+              handleOnChange={handleGstId}
+              error={error?.gstId}
+              helperMessage={helperMessage?.gstId}
+              helperMessageColor={"green"}
             />
-            <TextField
+            <TextInput
+              label="Enter Company Name"
+              value={companyName}
+              backgroundColor={"#FFFFFF"}
+              color={"#000000"}
+              noOfLines={1}
+              setValue={setCompanyName}
+              type="text"
+              icon={<University className="w-6 h-6 text-black" />}
+              handleOnChange={handleCompanyChange}
+              error={error?.companyName}
+              helperMessage={helperMessage?.companyName}
+              helperMessageColor={"green"}
+            />
+            {/* <TextField
               id="outlined-multiline-flexible"
               label="Enter Company Name"
               value={companyName}
@@ -518,7 +571,7 @@ export default function register() {
                   color: "green",
                 },
               }}
-            />
+            /> */}
 
             <FormControl>
               <div>Role</div>
