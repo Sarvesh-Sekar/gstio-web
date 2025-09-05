@@ -70,7 +70,7 @@ export const getGstVerified = async (value: string) => {
     const response = await api.post(VERIFY_GST, {
       gstId: value,
     });
-    return response;
+    return response?.data;
   } catch (err) {
     throw err?.response;
   }

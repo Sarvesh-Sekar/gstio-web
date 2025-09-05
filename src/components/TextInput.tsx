@@ -1,40 +1,68 @@
 "use client";
-import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { TextField, InputAdornment } from "@mui/material";
+import { useMemo, useState } from "react";
+import { debounce } from "lodash";
+import IconButton from "@mui/material/IconButton";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 type TextInputProps = {
   noOfLines: number;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   debounceTime?: number;
   debounceFunc?: () => void;
   textLength?: number;
   width?: string;
   height?: string;
+  type: string;
+  backgroundColor?: string;
+  color?: string;
+  error?: boolean;
+  handleOnChange?: (e: any) => void;
+  debounceState?: string;
+  setErrorLabel?: (value: string) => void;
+  helperMessage?: string;
+  helperMessageColor?: string; // 👈 new prop
   value: string;
   setValue: (value: string) => void;
+  icon?: React.ReactNode;
 };
+
 export default function TextInput({
   noOfLines = 1,
   label = "",
   placeholder = "",
+  backgroundColor = "#30363B",
+  color = "white",
+  type = "text",
   debounceTime = 0,
   debounceFunc = () => {},
+  debounceState = "",
+  error = false,
+  helperMessage = "",
+  helperMessageColor = "#A6ADB5", // 👈 default if not provided
   textLength = 100,
   width = "100",
   height = "100",
   value = "",
+  handleOnChange = () => {},
+  icon,
   setValue = (value: string) => {},
 }: TextInputProps) {
-  const [errorLabel, setErrorLabel] = useState("");
-  const errorCondition = () => {
-    if (value.length === textLength) {
-      setErrorLabel(`Max ${textLength} characters allowed`);
-      return true;
-    } else {
-      setErrorLabel("");
-      return false;
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    if (handleOnChange) handleOnChange(e);
+    else setValue(e.target.value);
   };
+
+  const [focus, setFocus] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+
   return (
     <TextField
       id="outlined-multiline-flexible"
@@ -42,18 +70,42 @@ export default function TextInput({
       maxRows={noOfLines}
       value={value}
       placeholder={placeholder}
-      onChange={(e) => {
-        setValue(e.target.value);
-        errorCondition();
-      }}
+      error={error}
+      helperText={helperMessage}
+      onChange={handleChange}
       className={`w-${width} h-${height}`}
-      slotProps={{ htmlInput: { maxLength: textLength, color: "white" } }}
+      slotProps={{ htmlInput: { maxLength: textLength } }}
       InputLabelProps={{
         style: { fontFamily: "Lexend" },
       }}
-      type="text"
-      error={!!errorLabel?.length}
-      helperText={!errorLabel?.length ? "" : errorLabel}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
+      type={type==="password" && showPassword ? "text" : type}
+      InputProps={{
+        startAdornment: icon && (
+          <InputAdornment position="start">{icon}</InputAdornment>
+        ),
+        endAdornment: type === "password" && (
+          <InputAdornment position="end">
+            <IconButton
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={handleClickShowPassword}
+      
+              edge="end"
+            >
+              {showPassword ? <Visibility /> : <VisibilityOff />}
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+      InputLabelProps={{
+        shrink: focus || Boolean(value), // float label only when focused/has value
+        style: {
+          color: focus ? "black" : "black",
+          fontFamily: "Lexend",
+          marginLeft: focus || value ? 0 : 32, // 👈 push label right when inside
+        },
+      }}
       sx={{
         fontFamily: "Lexend",
 
@@ -62,44 +114,46 @@ export default function TextInput({
           fontFamily: "Lexend",
         },
 
+        "& fieldset": {
+          borderColor: color,
+          borderWidth: 2,
+        },
+
         "& .MuiFormLabel-root.Mui-focused": {
-          color: "white", // This is the fix!
+          color: color, // label focus color = input text color
         },
 
         "& .MuiOutlinedInput-root": {
-          backgroundColor: "#30363B",
+          backgroundColor: backgroundColor, // 👈 dynamic background
           "& fieldset": {
-            borderColor: "white",
+            borderColor: color,
           },
           "&:hover fieldset": {
-            borderColor: "gray",
+            borderColor: color,
           },
           "&.Mui-focused fieldset": {
-            borderColor: "white",
+            borderColor: color,
           },
           "&.Mui-error fieldset": {
             borderColor: "red",
           },
         },
 
-        // Input text
         "& .MuiInputBase-input": {
-          color: "white",
+          color: color, // 👈 dynamic text color
           fontFamily: "Lexend",
         },
 
-        // Label styling
         "& .MuiFormLabel-root.Mui-error": {
-          color: "red",
+          color: "red", // label color
+        },
+        "& .MuiInputBase-input.Mui-error": {
+          color: "red", // typed text color
         },
 
-        // Helper text styling
         "& .MuiFormHelperText-root": {
           fontFamily: "Lexend",
-          color: "#A6ADB5",
-        },
-        "& .MuiFormHelperText-root.Mui-error": {
-          color: "red",
+          color: helperMessageColor,
         },
       }}
     />

@@ -13,6 +13,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import TextInput from "@/src/components/TextInput";
 import {
   postRegisterUser,
   postManualLogin,
@@ -41,8 +42,6 @@ export default function SignIn() {
   ) => {
     event.preventDefault();
   };
-
-  
 
   const handleMouseUpPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -145,7 +144,7 @@ export default function SignIn() {
           <div className="flex flex-col  gap-y-[3vh] items-center  sm:w-full  w-full h-full">
             <div className=" flex flex-col gap-y-[4vh] sm:w-[80%] w-[80%] ">
               {" "}
-              <TextField
+              {/* <TextField
                 id="outlined-multiline-flexible"
                 label="Enter Email Address"
                 multiline
@@ -203,8 +202,30 @@ export default function SignIn() {
                     fontFamily: "Lexend",
                   },
                 }}
+              /> */}
+              <TextInput
+                type="email"
+                label="Enter Email Address"
+                noOfLines={1}
+                value={email}
+                setValue={setEmail}
+                color="black"
+                backgroundColor="white"
+                icon={<Building2 className="w-6 h-6 text-black" />}
               />
-              <TextField
+
+              <TextInput
+                type="password"
+                label="Password"
+                noOfLines={1}
+                value={password}
+                setValue={setPassword}
+                color="black"
+                backgroundColor="white"
+                icon={<Lock className="w-6 h-6 text-black" />}
+                />
+                
+              {/* <TextField
                 id="outlined-password"
                 label="Password"
                 type={showPassword ? "text" : "password"} // ✅ correct way
@@ -279,7 +300,7 @@ export default function SignIn() {
                     fontFamily: "Lexend",
                   },
                 }}
-              />
+              /> */}
             </div>
             <Button
               variant="contained"
@@ -293,36 +314,34 @@ export default function SignIn() {
               Login
             </Button>
             <p>or</p>
-            
-              <Button
-                variant="contained"
-                onClick={() => {
-                  handleGoogleLogin();
-                }}
-                sx={(theme) => ({
-                  backgroundColor: "#1D4ED8",
-                  fontFamily: "Lexend",
-                  [theme.breakpoints.down("sm")]: {
-                    width: "50%",
-                    borderRadius: "20px",
-                  },
-                  width: "60%",
-                  borderRadius: "10px",
-                })}
-                startIcon={<GoogleIcon />}
-              >
-                Sign In With Google
-              </Button>
-            
+
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleGoogleLogin();
+              }}
+              sx={(theme) => ({
+                backgroundColor: "#1D4ED8",
+                fontFamily: "Lexend",
+                [theme.breakpoints.down("sm")]: {
+                  width: "50%",
+                  borderRadius: "20px",
+                },
+                width: "60%",
+                borderRadius: "10px",
+              })}
+              startIcon={<GoogleIcon />}
+            >
+              Sign In With Google
+            </Button>
+
             <div className="flex gap-x-2">
-              <p>
-                
-                  Don't have an account?
-                  
-              </p>
+              <p>Don't have an account?</p>
               <p
                 className="text-underline cursor-pointer text-[#1D4ED8]"
-                onClick={() =>{router.push('/signup')}}
+                onClick={() => {
+                  router.push("/signup");
+                }}
               >
                 Sign Up
               </p>

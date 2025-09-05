@@ -13,6 +13,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import TextInput from "@/src/components/TextInput";
 import {
   postRegisterUser,
   postManualLogin,
@@ -79,11 +80,11 @@ export default function SignUp() {
           <div className="flex flex-col  gap-y-[3vh] items-center  sm:w-full  w-full h-full">
             <div className=" flex flex-col gap-y-[4vh] sm:w-[80%] w-[80%] ">
               {" "}
-              <TextField
+              {/* <TextField
                 id="outlined-multiline-flexible"
                 label="Enter Email Address"
-                multiline
                 value={email}
+                maxRows={1}
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() =>
                   setFocused({
@@ -137,8 +138,28 @@ export default function SignUp() {
                     fontFamily: "Lexend",
                   },
                 }}
+              /> */}
+              <TextInput
+                label="Enter Email Address"
+                type="email"
+                noOfLines={1}
+                value={email}
+                setValue={setEmail}
+                color={"#000000"}
+                backgroundColor={"#FFFFFF"}
+                icon={<Building2 className="w-6 h-6 text-black" />}
               />
-              <TextField
+              <TextInput
+                type={"password"}
+                label="Password"
+                noOfLines={1}
+                value={password}
+                setValue={setPassword}
+                color={"#000000"}
+                backgroundColor={"#FFFFFF"}
+                icon={<Lock className="w-6 h-6 text-black" />}
+              />
+              {/* <TextField
                 id="outlined-password"
                 label="Password"
                 type={showPassword ? "text" : "password"} // ✅ correct way
@@ -213,8 +234,27 @@ export default function SignUp() {
                     fontFamily: "Lexend",
                   },
                 }}
+                
+              /> */}
+              <TextInput
+                type={"password"}
+                label="Confirm Password"
+                noOfLines={1}
+                value={confirmPassword}
+                setValue={setConfirmPassword}
+                color={"#000000"}
+                backgroundColor={"#FFFFFF"}
+                icon={<Lock className="w-6 h-6 text-black" />}
+                error={
+                  confirmPassword !== password && confirmPassword?.length > 0
+                }
+                helperMessage={
+                  confirmPassword !== password && confirmPassword?.length
+                    ? "Passwords do not match"
+                    : ""
+                }
               />
-              <TextField
+              {/* <TextField
                 id={
                   confirmPassword !== password
                     ? "outlined-error-helper-text"
@@ -322,7 +362,7 @@ export default function SignUp() {
                     color: "red",
                   },
                 }}
-              />
+              /> */}
             </div>
             <Button
               variant="contained"
