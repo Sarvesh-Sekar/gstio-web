@@ -1,5 +1,6 @@
 "use client";
 import type { Metadata } from "next";
+
 import { Geist_Mono, Lexend } from "next/font/google";
 import "@/app/globals.css";
 import { ToastContainer } from "react-toastify";
@@ -35,7 +36,7 @@ export default function RootLayout({
 
   const isAuthenticated =
     getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
-  console.log(getCookie("AuthToken"));
+  ;
 
   //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (
@@ -56,7 +57,7 @@ export default function RootLayout({
             <div className="flex h-screen">
               <SideBar />
 
-              <div className="flex flex-col h-full w-[80%]">
+              <div className="flex flex-col h-full w-[82%]">
                 <div>
                   <ActiveHeader />
                 </div>

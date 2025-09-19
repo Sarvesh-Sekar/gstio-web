@@ -23,8 +23,8 @@ type TextInputProps = {
   setErrorLabel?: (value: string) => void;
   helperMessage?: string;
   helperMessageColor?: string; // 👈 new prop
-  value: string;
-  setValue: (value: string) => void;
+  value: any;
+  setValue?: (value: any) => void;
   icon?: React.ReactNode;
 };
 
@@ -42,16 +42,16 @@ export default function TextInput({
   helperMessage = "",
   helperMessageColor = "#A6ADB5", // 👈 default if not provided
   textLength = 100,
-  width = "100",
-  height = "100",
+  width = "",
+  height = "",
   value = "",
-  handleOnChange = () => {},
+  handleOnChange,
   icon,
   setValue = (value: string) => {},
 }: TextInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-    if (handleOnChange) handleOnChange(e);
+   
+    if (handleOnChange!==undefined) handleOnChange(e);
     else setValue(e.target.value);
   };
 
@@ -73,7 +73,7 @@ export default function TextInput({
       error={error}
       helperText={helperMessage}
       onChange={handleChange}
-      className={`w-${width} h-${height}`}
+      className={`w-[${width}] h-[${height}]`}
       slotProps={{ htmlInput: { maxLength: textLength } }}
       InputLabelProps={{
         style: { fontFamily: "Lexend" },
@@ -156,6 +156,7 @@ export default function TextInput({
           color: helperMessageColor,
         },
       }}
+      
     />
   );
 }

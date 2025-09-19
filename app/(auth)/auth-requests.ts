@@ -58,7 +58,7 @@ export const postCompleteSignup = async (payload: any) => {
 export const postManualLogin = async (payload: POST_LOGIN_REQUEST) => {
   try {
     const response = await api.post(LOGIN_USER, payload);
-    console.log(response?.data?.token + " RES");
+    // console.log(response?.data?.token + " RES");
     return response;
   } catch (err) {
     throw err;

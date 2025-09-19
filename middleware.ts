@@ -5,67 +5,35 @@ import { getCookie } from "@/src/helpers/cookieHelper";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  const cookieStore = cookies();
-  const isAuthenticate = request.cookies.has("AuthToken");
-  const isAuthenticated = getCookie("AuthToken")!==null;
+  const token = request.cookies.get("AuthToken")?.value;
   const user = request.cookies.get("userData");
   const userData = JSON?.parse(user?.value || "{}");
 
-  const protectedRoutes = ["/home", "/addInvoice", "/dashboard", "/home"];
+  const isAuthenticated =
+    token === "null" || token === undefined ? false : true;
 
-  // if (!userData?.details && pathname !== "/register") {
-  //   return NextResponse.redirect(new URL("/register", request.url));
-  // }
+  const protectedRoutes = ["/home", "/addInvoice", "/dashboard", "/products"];
 
-  console.log(isAuthenticated)
-
-  if (!!isAuthenticated) {
-    // Case 0: If userData is missing completely → go to signIn
-    console.log(!userData?.userId + " userData  " + userData);
-
-    if(protectedRoutes.includes(pathname) || pathname === "/")
-    {
-          return NextResponse.redirect(new URL("/signIn", request.url));
-    }
-  
-
-    if (!userData?.userId && pathname !== "/signup") {
-      return NextResponse.redirect(new URL("/signup", request.url));
-    }
-
-    // Case 1: Protected routes and root require login
-    // else if (protectedRoutes.includes(pathname) || pathname === "/") {
-    //   return NextResponse.redirect(new URL("/signIn", request.url));
-    // }
-
-    // Case 2: If user has no userId → also go to signIn
-    else if (!userData && !userData?.details && pathname !== "/register") {
-      return NextResponse.redirect(new URL("/register", request.url));
-    }
-
-    // Case 3: User must complete registration
-   else  if (!userData && !userData?.details && !userData?.verified && pathname !== "/generateOtp") {
-      return NextResponse.redirect(new URL("/generateOtp", request.url));
-    }
-
-    // Case 4: User must verify account
-    // else if (
-    //   userData?.details &&
-    //   !userData?.verified &&
-    //   pathname !== "/generateOtp"
-    // ) {
-    //   return NextResponse.redirect(new URL("/generateOtp", request.url));
-    // }
+  // If not authenticated → redirect to /signIn
+  if (
+    !isAuthenticated &&
+    (protectedRoutes.includes(pathname) || pathname === "/")
+  ) {
+    return NextResponse.redirect(new URL("/signIn", request.url));
   }
 
-  // Case 4: Authenticated user should not see login/signup/root
+  // If authenticated but trying to access signIn/signup/root → redirect to dashboard
   if (
     isAuthenticated &&
     (pathname === "/signIn" || pathname === "/signup" || pathname === "/")
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
+
+  // Optional: handle registration flow
+  // if (isAuthenticated && !userData?.userId && pathname !== "/signup") {
+  //   return NextResponse.redirect(new URL("/signup", request.url));
+  // }
 
   return NextResponse.next();
 }

@@ -10,14 +10,38 @@
 :root {
   --background: #1e1e1e;
   --foreground: #1e1e1e;
+  --primary: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 9%;
+    --primary: #1d4ed8;
+    --primary-foreground: #67737e;
+  }
 
-    --primary:#1D4ED8,
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px; /* scrollbar thickness */
+    height: 6px; /* horizontal scrollbar */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* track background */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* scrollbar color */
+    border-radius: 6px; /* rounded edges */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* hover effect */
+  }
+
+  /* Hide scrollbar arrows */
+  .custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
   }
 }
 

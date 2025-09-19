@@ -11,6 +11,15 @@ module.exports = {
       fontFamily: {
         lexend: ["var(--font-lexend),sans-serif"],
       },
+      colors: {
+        primary: "var(--primary)",
+        muted: "var(--primary-foreground)",
+      },
+
+     animation:
+     {
+      'spin-slow': 'spin 3s linear infinite',
+     }
     },
   },
 

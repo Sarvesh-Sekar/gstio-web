@@ -3,6 +3,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt"; // list invoice
 import PostAddIcon from "@mui/icons-material/PostAdd"; //create invoice
 import LocalOfferIcon from "@mui/icons-material/LocalOffer"; //sales
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart"; // purchase
+import ShoppingBag from "@mui/icons-material/ShoppingBag";
 import { getCookie } from "@/src/helpers/cookieHelper";
 
 export const sideBarData = [
@@ -30,20 +31,26 @@ export const sideBarData = [
     link: "/sales",
     icon: LocalOfferIcon,
   },
-
   {
-    id: 5,
+     id:5,
+     name:"Products",
+     link:"/products",
+     icon:ShoppingBag
+  },
+  {
+    id: 6,
     name: "Purchase",
     link: "/purchase",
     icon: AddShoppingCartIcon,
   },
+
   ,
 ];
 
 export const isAuthenticated = getCookie("AuthToken") ? true : false;
 
 export const userData = (() => {
-  const data = getCookie("userData");
+  const data = localStorage.getItem("userData");
   try {
     return data ? JSON.parse(data) : null;
   } catch (err) {
