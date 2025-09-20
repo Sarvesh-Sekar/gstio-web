@@ -58,7 +58,7 @@ export const useProductsStore = create<ProductStore>((set, get) => ({
   ): Promise<POST_GET_ALL_PRODUCTS_RESPONSE> => {
     try {
       const response = await getAllProducts(payload);
-      console.log(response);
+     
       set((state) => ({
         productData: {
           // keep other keys
@@ -81,6 +81,7 @@ export const useProductsStore = create<ProductStore>((set, get) => ({
     }
   },
 
+  
   deleteProduct: async (
     payload: POST_DELETE_PRODUCT_REQUEST
   ): Promise<POST_DELETE_PRODUCT_RESPONSE> => {

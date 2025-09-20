@@ -17,7 +17,8 @@ interface ColumnData {
   label: string;
   dataKey: string;
   numeric?: boolean;
-  icon?: React.ReactNode;
+  icon?: string;
+  onClick?: () => void;
 }
 
 interface RowData {
@@ -120,7 +121,14 @@ export default function CommonTable({
             align="center"
             sx={{ fontFamily: "Lexend, sans-serif" }} // 👈 font applied
           >
-            {column?.icon ? column.icon : row[column.dataKey]}
+            {column?.icon ? (
+              <column.icon
+                className="cursor-pointer text-primary w-full"
+                onClick={() => column.onClick(row.productId)}
+              />
+            ) : (
+              row[column.dataKey]
+            )}
           </TableCell>
         ))}
       </>
@@ -138,7 +146,6 @@ export default function CommonTable({
         itemContent={rowContent}
         endReached={endReached}
         className="border-2 custom-scrollbar"
-        
       />
     </Paper>
   );

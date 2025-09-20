@@ -17,7 +17,8 @@ export type POST_ADD_PRODUCT_REQUEST = {
 };
 
 export type POST_GET_ALL_PRODUCTS_REQUEST = {
-  searchFor: string;
+  productId?: number;
+  searchFor?: string;
   pageNo: number;
   count: number;
 };

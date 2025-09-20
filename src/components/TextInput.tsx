@@ -7,7 +7,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 type TextInputProps = {
   noOfLines: number;
-  label: string;
+  label?: string;
   placeholder?: string;
   debounceTime?: number;
   debounceFunc?: () => void;

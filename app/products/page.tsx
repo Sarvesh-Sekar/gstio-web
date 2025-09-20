@@ -10,6 +10,8 @@ import { POST_GET_ALL_PRODUCTS_REQUEST } from "@/app/products/product.request.ty
 import CommonTable from "@/src/components/CommonTable";
 import { Trash } from "lucide-react";
 import { SquarePen } from "lucide-react";
+import { getAllProducts } from "@/app/products/products.requests";
+import AlertModal from "@/src/components/AlertModal";
 
 export default function Products() {
   const [open, setOpen] = useState(false);
@@ -20,6 +22,9 @@ export default function Products() {
   const getProductList = useProductsStore((state) => state?.getProductList);
   const updateProduct = useProductsStore((state) => state?.updateProduct);
   const deleteProduct = useProductsStore((state) => state?.deleteProduct);
+
+  const [openAlertModal, setOpenAlertModal] = useState(true);
+  const [preData, setPreData] = useState({});
 
   const tableColumns = [
     {
@@ -62,14 +67,31 @@ export default function Products() {
       label: "Edit",
       dataKey: "edit",
       numeric: true,
-      icon: <SquarePen  className = "cursor-pointer text-primary  w-full"/>
+      icon: SquarePen,
+      onClick: async (productId) => {
+        const response = await getAllProducts({
+          pageNo: 1,
+          searchFor: "",
+          productId: productId,
+          count: 10,
+        });
+
+        setPreData(response?.products[0]);
+        setOpen(true);
+      },
     },
     {
       width: 200,
       label: "Delete",
       dataKey: "delete",
       numeric: true,
-      icon: <Trash className = "cursor-pointer text-red-400 w-full "/>,
+      icon: Trash,
+
+      onClick: async (productId) => {
+        setOpenAlertModal(true);
+        // await deleteProduct({ productId: productId });
+        // fetchProductData({ pageNo: 1, searchFor: "", count: 10 });
+      },
     },
   ];
   const fetchProductData = async (payload: POST_GET_ALL_PRODUCTS_REQUEST) => {
@@ -89,14 +111,11 @@ export default function Products() {
     });
   };
 
-  console.log(productData?.pageNo, productData?.totalPages);
   const endReached = productData?.totalPages === productData?.pageNo;
 
   useEffect(() => {
     fetchProductData({ pageNo: 1, searchFor: "", count: 40 });
   }, []);
-
-  console.log(productData);
 
   return (
     <div className="flex h-full flex-col  w-full items-center gap-y-4 p-2">
@@ -147,14 +166,19 @@ export default function Products() {
       {open && (
         <AddProductModal
           open={open}
+          preData={preData}
+          setPreData={setPreData}
           setOpen={setOpen}
-          onSuccessCallBack={()=> fetchProductData({
-            pageNo: 1,
-            searchFor: "",
-            count: 40,
-          })}
+          onSuccessCallBack={() =>
+            fetchProductData({
+              pageNo: 1,
+              searchFor: "",
+              count: 40,
+            })
+          }
         />
       )}
+      {openAlertModal && <AlertModal open = {openAlertModal} />}
     </div>
   );
 }
