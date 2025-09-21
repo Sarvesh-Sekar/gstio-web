@@ -18,6 +18,7 @@ interface ColumnData {
   dataKey: string;
   numeric?: boolean;
   icon?: string;
+  iconColor?: string;
   onClick?: () => void;
 }
 
@@ -123,7 +124,7 @@ export default function CommonTable({
           >
             {column?.icon ? (
               <column.icon
-                className="cursor-pointer text-primary w-full"
+                className={`cursor-pointer ${ column?.iconColor ?  `text-[${column?.iconColor}]` : `text-primary` } w-full`}
                 onClick={() => column.onClick(row.productId)}
               />
             ) : (

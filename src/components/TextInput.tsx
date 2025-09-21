@@ -26,6 +26,7 @@ type TextInputProps = {
   value: any;
   setValue?: (value: any) => void;
   icon?: React.ReactNode;
+  className?: string;
 };
 
 export default function TextInput({
@@ -48,20 +49,22 @@ export default function TextInput({
   handleOnChange,
   icon,
   setValue = (value: string) => {},
+  className = "",
+  ...props
 }: TextInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-   
-    if (handleOnChange!==undefined) handleOnChange(e);
+    if (handleOnChange !== undefined) handleOnChange(e);
     else setValue(e.target.value);
   };
 
   const [focus, setFocus] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
-
 
   return (
     <TextField
@@ -73,14 +76,14 @@ export default function TextInput({
       error={error}
       helperText={helperMessage}
       onChange={handleChange}
-      className={`w-[${width}] h-[${height}]`}
+      className={`${width === "full" ? "w-full" : `w-[${width}]`} ${className}`}
       slotProps={{ htmlInput: { maxLength: textLength } }}
       InputLabelProps={{
         style: { fontFamily: "Lexend" },
       }}
       onFocus={() => setFocus(true)}
       onBlur={() => setFocus(false)}
-      type={type==="password" && showPassword ? "text" : type}
+      type={type === "password" && showPassword ? "text" : type}
       InputProps={{
         startAdornment: icon && (
           <InputAdornment position="start">{icon}</InputAdornment>
@@ -90,7 +93,6 @@ export default function TextInput({
             <IconButton
               aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={handleClickShowPassword}
-      
               edge="end"
             >
               {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -112,11 +114,13 @@ export default function TextInput({
         "& .MuiFormLabel-root": {
           color: "#A6ADB5",
           fontFamily: "Lexend",
+          height: "30vh",
         },
 
         "& fieldset": {
           borderColor: color,
           borderWidth: 2,
+          height: height === "full" ? "100%" : height,
         },
 
         "& .MuiFormLabel-root.Mui-focused": {
@@ -156,7 +160,7 @@ export default function TextInput({
           color: helperMessageColor,
         },
       }}
-      
+      {...props}
     />
   );
 }

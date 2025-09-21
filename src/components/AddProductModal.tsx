@@ -193,6 +193,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"40%"}
+                    height={"60px"}
                   />
                 </div>
               </FormComponent>
@@ -217,6 +218,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"30%"}
+                    height={"60px"}
                     icon={<BadgePercent className="w-5 h-5 text-black" />}
                   />
                   <TextInput
@@ -233,6 +235,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"30%"}
+                    height={"60px"}
                     icon={<BadgePercent className="w-5 h-5 text-black" />}
                   />
                   <TextInput
@@ -249,6 +252,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"30%"}
+                    height={"60px"}
                     icon={<BadgePercent className="w-5 h-5 text-black" />}
                   />
                 </div>
@@ -273,6 +277,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"30%"}
+                    height={"60px"}
                     icon={<BadgeIndianRupee className="w-5 h-5 text-black" />}
                   />
                   <TextInput
@@ -289,6 +294,7 @@ export default function AddProduct({
                     color="black"
                     backgroundColor="white"
                     width={"30%"}
+                    height={"60px"}
                     icon={<BadgeIndianRupee className="w-5 h-5 text-black" />}
                   />
                 </div>

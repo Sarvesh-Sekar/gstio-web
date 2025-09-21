@@ -1,7 +1,7 @@
 "use client";
 import Button from "@mui/material/Button";
 import { BadgePlus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import EmptyStateTableComponent from "@/src/components/EmptyTableComponent";
 import AddProductModal from "@/src/components/AddProductModal";
 import TextInput from "@/src/components/TextInput";
@@ -12,19 +12,22 @@ import { Trash } from "lucide-react";
 import { SquarePen } from "lucide-react";
 import { getAllProducts } from "@/app/products/products.requests";
 import AlertModal from "@/src/components/AlertModal";
+import { toast } from "react-toastify";
+import { debounce } from "lodash";
 
 export default function Products() {
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const productData = useProductsStore((state) => state?.productData);
   const getProductList = useProductsStore((state) => state?.getProductList);
   const updateProduct = useProductsStore((state) => state?.updateProduct);
   const deleteProduct = useProductsStore((state) => state?.deleteProduct);
 
-  const [openAlertModal, setOpenAlertModal] = useState(true);
+  const [openAlertModal, setOpenAlertModal] = useState(false);
   const [preData, setPreData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const tableColumns = [
     {
@@ -86,9 +89,19 @@ export default function Products() {
       dataKey: "delete",
       numeric: true,
       icon: Trash,
+      iconColor: "#F54927",
 
       onClick: async (productId) => {
+        const response = await getAllProducts({
+          pageNo: 1,
+          searchFor: "",
+          productId: productId,
+          count: 10,
+        });
+
+        setPreData(response?.products[0]);
         setOpenAlertModal(true);
+
         // await deleteProduct({ productId: productId });
         // fetchProductData({ pageNo: 1, searchFor: "", count: 10 });
       },
@@ -103,12 +116,47 @@ export default function Products() {
     }
   };
 
+  const deleteProductData = async (deleteProductId) => {
+    try {
+      await deleteProduct({ productId: deleteProductId });
+
+      toast.success("Product Deleted Successfully");
+    } catch (err) {
+      toast.error("Something Went Wrong");
+    }
+  };
+
   const onLoadMore = () => {
     fetchProductData({
       pageNo: productData?.pageNo + 1,
       searchFor: "",
       count: 10,
     });
+  };
+
+  const debounceFetch = useMemo(
+    () =>
+      debounce((value: string) => {
+        try {
+          setIsLoading(true);
+          fetchProductData({
+            pageNo: 1,
+            searchFor: value,
+            count: 10,
+          });
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 1000),
+    []
+  );
+
+  const handleSearch = async (e) => {
+    setSearchText(e.target.value);
+    setIsLoading(true);
+    debounceFetch(e.target.value);
   };
 
   const endReached = productData?.totalPages === productData?.pageNo;
@@ -129,6 +177,17 @@ export default function Products() {
         </div>
 
         <div className="flex flex-row h-full items-center gap-x-10  justify-center">
+          <TextInput
+            placeholder={"🔍Search"}
+            value={searchText}
+            handleOnChange={handleSearch}
+            noOfLines={1}
+            width={"200px"}
+            height={"60px"}
+            type="text"
+            color={"black"}
+            backgroundColor={"white"}
+          />
           <Button
             variant="contained"
             sx={{
@@ -147,12 +206,19 @@ export default function Products() {
         </div>
       </div>
 
-      {!productData?.products?.length ? (
+      {!productData?.products?.length || isLoading ? (
         <EmptyStateTableComponent
           title="Products"
+          loading={isLoading}
           subtitle="Manage your Inventory Products here"
-          emptyStateDescription="No Products Found , Add a new Product"
-          onClick={() => setOpen(true)}
+          emptyStateDescription={
+            isLoading
+              ? "Waiting for Response..."
+              : !!searchText?.length
+              ? `No Products Found for ${searchText} . Try using different Keyword`
+              : "No Products Found , Add a new Product"
+          }
+          onClick={!!searchText ? () => {} : () => setOpen(true)}
         />
       ) : (
         <CommonTable
@@ -178,7 +244,23 @@ export default function Products() {
           }
         />
       )}
-      {openAlertModal && <AlertModal open = {openAlertModal} />}
+      {openAlertModal && (
+        <AlertModal
+          open={openAlertModal}
+          type="normal"
+          setOpen={setOpenAlertModal}
+          description={`Are you sure you want to delete this product ${preData?.productName}?`}
+          onSubmitClick={async () => {
+            await deleteProductData(preData?.productId);
+            await fetchProductData({ pageNo: 1, searchFor: "", count: 40 });
+            setOpenAlertModal(false);
+            setPreData({});
+          }}
+          onCancelClick={() => {
+            setOpenAlertModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

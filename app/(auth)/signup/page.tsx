@@ -146,6 +146,7 @@ export default function SignUp() {
                 value={email}
                 setValue={setEmail}
                 color={"#000000"}
+                height={"60px"}
                 backgroundColor={"#FFFFFF"}
                 icon={<Building2 className="w-6 h-6 text-black" />}
               />
@@ -156,6 +157,7 @@ export default function SignUp() {
                 value={password}
                 setValue={setPassword}
                 color={"#000000"}
+                height={"60px"}
                 backgroundColor={"#FFFFFF"}
                 icon={<Lock className="w-6 h-6 text-black" />}
               />
@@ -244,6 +246,7 @@ export default function SignUp() {
                 setValue={setConfirmPassword}
                 color={"#000000"}
                 backgroundColor={"#FFFFFF"}
+                height={"60px"}
                 icon={<Lock className="w-6 h-6 text-black" />}
                 error={
                   confirmPassword !== password && confirmPassword?.length > 0

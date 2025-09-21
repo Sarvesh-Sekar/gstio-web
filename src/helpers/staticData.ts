@@ -49,15 +49,15 @@ export const sideBarData = [
 
 export const isAuthenticated = getCookie("AuthToken") ? true : false;
 
-export const userData = (() => {
-  const data = localStorage.getItem("userData");
-  try {
-    return data ? JSON.parse(data) : null;
-  } catch (err) {
-    console.error("Invalid userData cookie", err);
-    return null;
-  }
-})();
+// export const userData = (() => {
+//   const data = localStorage.getItem("userData");
+//   try {
+//     return data ? JSON.parse(data) : null;
+//   } catch (err) {
+//     console.error("Invalid userData cookie", err);
+//     return null;
+//   }
+// })();
 
 export const updateUserData = (data: any) => {
   localStorage.setItem("userData", JSON.stringify(data));

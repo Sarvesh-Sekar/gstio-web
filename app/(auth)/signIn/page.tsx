@@ -211,6 +211,7 @@ export default function SignIn() {
                 setValue={setEmail}
                 color="black"
                 backgroundColor="white"
+                height={"60px"}
                 icon={<Building2 className="w-6 h-6 text-black" />}
               />
 
@@ -222,6 +223,7 @@ export default function SignIn() {
                 setValue={setPassword}
                 color="black"
                 backgroundColor="white"
+               height={"60px"}
                 icon={<Lock className="w-6 h-6 text-black" />}
                 />
                 
