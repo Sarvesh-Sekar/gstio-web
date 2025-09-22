@@ -1,6 +1,6 @@
 "use client";
 import type { Metadata } from "next";
-import {getCookie} from "@/src/helpers/cookieHelper"
+import { getCookie } from "@/src/helpers/cookieHelper";
 import { Geist_Mono, Lexend } from "next/font/google";
 import "@/app/globals.css";
 import { ToastContainer } from "react-toastify";
@@ -33,12 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const path = usePathname();
-  let isAuthenticated ;
-  useEffect(() => {
-     isAuthenticated =
-      getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
-  }, []);
+  let isAuthenticated =
+    getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
 
+ 
   //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (
     <html lang="en">
