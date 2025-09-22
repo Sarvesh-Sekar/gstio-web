@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { userData } from "@/src/helpers/staticData";
-import { getCookie } from "@/src/helpers/cookieHelper";
+// import { userData } from "@/src/helpers/staticData";
+// import { getCookie } from "@/src/helpers/cookieHelper";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

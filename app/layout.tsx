@@ -1,13 +1,13 @@
 "use client";
 import type { Metadata } from "next";
-
+import {getCookie} from "@/src/helpers/cookieHelper"
 import { Geist_Mono, Lexend } from "next/font/google";
 import "@/app/globals.css";
 import { ToastContainer } from "react-toastify";
 import Header from "@/src/components/Header";
 import { usePathname } from "next/navigation";
 import Avatar from "@mui/material/Avatar";
-import { getCookie } from "@/src/helpers/cookieHelper";
+import { useEffect } from "react";
 import { sideBarData } from "@/src/helpers/staticData";
 import SideBar from "@/src/components/Sidebar";
 import ActiveHeader from "@/src/components/ActiveHeader";
@@ -33,10 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const path = usePathname();
-
-  const isAuthenticated =
-    getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
-  ;
+  let isAuthenticated ;
+  useEffect(() => {
+     isAuthenticated =
+      getCookie("AuthToken") !== "null" && getCookie("AuthToken") !== null;
+  }, []);
 
   //  console.log(isAuthenticated, "isAuthenticated",getCookie("AuthToken"),'token');
   return (
