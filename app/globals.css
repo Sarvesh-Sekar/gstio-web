@@ -9,14 +9,58 @@
 
 :root {
   --background: #1e1e1e;
-  --foreground: #1E1E1E;
+  --foreground: #1e1e1e;
+  --primary: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1E1E1E;
-    --foreground: #ffffff;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    --primary: #1d4ed8;
+    --primary-foreground: #67737e;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px; /* scrollbar thickness */
+    height: 6px; /* horizontal scrollbar */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* track background */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* scrollbar color */
+    border-radius: 6px; /* rounded edges */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* hover effect */
+  }
+
+  /* Hide scrollbar arrows */
+  .custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+.animate-shake {
+  animation: shake 0.6s infinite;
 }
 
 body {
