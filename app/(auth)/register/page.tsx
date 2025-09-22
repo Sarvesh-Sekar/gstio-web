@@ -339,6 +339,7 @@ export default function register() {
               noOfLines={1}
               setValue={setUserName}
               type="text"
+              height={"60px"}
               icon={<Users className="w-6 h-6 text-black" />}
             />
 
@@ -486,6 +487,7 @@ export default function register() {
               icon={<IdCard className="w-6 h-6 text-black" />}
               handleOnChange={handleGstId}
               error={error?.gstId}
+              height={"60px"}
               helperMessage={helperMessage?.gstId}
               helperMessageColor={"green"}
             />
@@ -497,6 +499,7 @@ export default function register() {
               noOfLines={1}
               setValue={setCompanyName}
               type="text"
+              height={"60px"}
               icon={<University className="w-6 h-6 text-black" />}
               handleOnChange={handleCompanyChange}
               error={error?.companyName}
