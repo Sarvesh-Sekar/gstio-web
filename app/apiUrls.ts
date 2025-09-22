@@ -18,6 +18,7 @@ export const POST_DELETE_PRODUCT = "/products/deleteProduct";
 
 export const api = axios.create({
   baseURL: BASE_URL,
+  credentials:"include",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
